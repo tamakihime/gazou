@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 3.10)
+project(gazou C)
+
+set(CMAKE_C_STANDARD 99)
+
+add_executable(gazou kadai02b.c)
