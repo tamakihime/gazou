@@ -74,7 +74,7 @@ void binarize( int n1, int n2, int bin_n ) //画像n1を二値化して 画像n2
     height[n2] = height[n1];
     for(y=0;y<height[n1];y++){
         for(x=0;x<width[n1];x++){
-            image[n2][y][x] = ( image[n1][y][x] < t ) ? 255 : 0 ;
+            image[n2][y][x] = ( image[n1][y][x] < t ) ? 0 : 255 ;
                                                       //黒 else 白
         }
     }
