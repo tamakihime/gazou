@@ -3,4 +3,4 @@ project(gazou C)
 
 set(CMAKE_C_STANDARD 99)
 
-add_executable(gazou kadai02b.c)
+add_executable(gazou kadai02a.c)
