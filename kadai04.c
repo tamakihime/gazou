@@ -210,9 +210,9 @@ void set_Cji_sobel_h(int *w)
 {
     double Cji_sobel_h[3][3] =
     {
-        {...},
-        {...},
-        {...}
+        {-1,-2,-1},
+        {0,0,0},
+        {1,2,1}
     };
     int j,i;
     (*w) = 1;
@@ -228,9 +228,9 @@ void set_Cji_laplacian(int *w)
 {
     double Cji_laplacian[3][3] =
     {
-        {...},
-        {...},
-        {...}
+        {0,-1,0},
+        {-1,4,-1},
+        {0,-1,0}
     };
     int j,i;
     (*w) = 1;
@@ -246,9 +246,9 @@ void set_Cji_sharpen(int *w)
 {
     double Cji_sharpen[3][3] =
     {
-        {...},
-        {...},
-        {...}
+        {0,-1,0},
+        {-1,5,-1},
+        {0,-1,0}
     };
     int j,i;
     (*w) = 1;
@@ -267,7 +267,7 @@ void set_Cji_gaussian(double sigma, int *w)
     int size = 2*(*w)+1;
     for(j=-(*w);j<=(*w);j++){
         for(i=-(*w);i<=(*w);i++){
-            Cji[j+(*w)][i+(*w)] = exp((double)(...)/((double)2.0*M_PI*sigma*sigma);
+            Cji[j+(*w)][i+(*w)] = exp((double)(-1*(j*j+i*i)/(2*sigma*sigma)))/((double)2.0*M_PI*sigma*sigma);
         }
     }
 }
