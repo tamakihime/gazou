@@ -114,10 +114,10 @@ void IDCT()
         for(x=0; x<M; x++){
             dd=0;
             for(v=0; v<N; v++){
-                cv = (v==0) ? sqrt(1.0/M): sqrt(2.0/M) ;
+                cv = (v==0) ? sqrt(1.0/N): sqrt(2.0/N) ;
                 for(u=0; u<M; u++){
-                    cu = (u==0) ? sqrt(1.0/N) : sqrt(2.0/N);
-                    dd += g[v][u] *  cos((2.0*x+1.0) * u * M_PI/(2.0*M) ) * cos((2.0*y+1.0) * v * M_PI/ (2.0*N) * cu * cv * dct_filter[v][u]);
+                    cu = (u==0) ? sqrt(1.0/M) : sqrt(2.0/M);
+                    dd += g[v][u] *  cos((2.0*x+1.0) * u * M_PI/(2.0*M) ) * cos((2.0*y+1.0) * v * M_PI/ (2.0*N)) * cu * cv * dct_filter[v][u];
                 }
             }
             f[y][x]=dd;
