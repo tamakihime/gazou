@@ -93,13 +93,13 @@ void DCT()
     double cv, cu, dd;
 
     for(v=0; v<N; v++){
-        cv = (v==0) ? ... : ... ;
+        cv = (v==0) ? sqrt(1.0/M): sqrt(2.0/M) ;
         for(u=0; u<M; u++){
-            cu = (u==0) ? ... : ... ;
+            cu = (u==0) ? sqrt(1.0/N) : sqrt(2.0/N) ;
             dd=0;
             for(y=0; y<N; y++)
                 for(x=0; x<M; x++)
-                    dd += f[y][x] * cos((2*x+1) * u * M_PI/ ... ) * cos((2*y+1) * v * M_PI/ ... );
+                    dd += f[y][x] * cos((2.0*x+1.0) * u * M_PI/(2.0*M) ) * cos((2.0*y+1.0) * v * M_PI/ (2.0*N) );
             g[v][u]=dd*cu*cv;
         }
     }
@@ -114,10 +114,10 @@ void IDCT()
         for(x=0; x<M; x++){
             dd=0;
             for(v=0; v<N; v++){
-                cv = (v==0) ? ... : ... ;
+                cv = (v==0) ? sqrt(1.0/M): sqrt(2.0/M) ;
                 for(u=0; u<M; u++){
-                    cu = (u==0) ? ... : ... ;
-                    dd += g[v][u] * cos( ... ) * cos( ... ) * cu * cv * dct_filter[v][u];
+                    cu = (u==0) ? sqrt(1.0/N) : sqrt(2.0/N);
+                    dd += g[v][u] *  cos((2.0*x+1.0) * u * M_PI/(2.0*M) ) * cos((2.0*y+1.0) * v * M_PI/ (2.0*N) * cu * cv * dct_filter[v][u]);
                 }
             }
             f[y][x]=dd;
