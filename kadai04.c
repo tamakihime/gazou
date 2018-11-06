@@ -1,4 +1,4 @@
-﻿#include<stdio.h>
+#include<stdio.h>
 #include<math.h>
 #include<stdlib.h>  //qsort関数
 #include<float.h>   //DBL_MIN, DBL_MAX定数
@@ -55,36 +55,36 @@ void filtering(int filter_num, int n1, int n2 )
     int k;
     switch(filter_num) {
         case 1: set_Cji_sobel_v(&w); //フィルタ係数の設定、w=1
-                break;
+            break;
         case 2: set_Cji_sobel_h(&w); //w=1
-                break;
+            break;
         case 3: set_Cji_laplacian(&w); //w=1
-                break;
+            break;
         case 4: set_Cji_sharpen(&w); //w=1
-                break;
+            break;
         case 5: set_Cji_gaussian(1.0, &w); //w=3
-                break;
+            break;
         case 6: set_Cji_gaussian(3.0, &w); //w=9
-                break;
+            break;
         case 7: set_Cji_blur_v(&w); //w=5
-                break;
+            break;
         case 8: set_Cji_blur_h(&w); //w=5
-                break;
+            break;
         case 9: w=1;
-                k=4; //median_3x3:[0,1,2,3,4,5,6,7,8]
-                break;
+            k=4; //median_3x3:[0,1,2,3,4,5,6,7,8]
+            break;
         case 10: w=1;
-                k=0; //min_3x3:[0,1,2,3,4,5,6,7,8]
-                break;
+            k=0; //min_3x3:[0,1,2,3,4,5,6,7,8]
+            break;
         case 11: w=1;
-                k=8; //max_3x3:[0,1,2,3,4,5,6,7,8]
-                break;
+            k=8; //max_3x3:[0,1,2,3,4,5,6,7,8]
+            break;
     }
-    
+
     //画像No.n2の画像サイズを入力
     width[n2]=width[n1];
     height[n2]=height[n1];
-    
+
     //フィルタ窓が画像をはみ出さないように「w画素内側」の範囲を計算する（外周部を除く）
     //同時に、最小値・最大値を求め、正規化に使用する
     min = DBL_MAX; //double型の最大値
@@ -98,16 +98,16 @@ void filtering(int filter_num, int n1, int n2 )
         }
     }
     printf("min=%f, max=%f\n", min, max);
-    
+
     for(y=w;y<height[n2]-w;y++){
         for(x=w;x<width[n2]-w;x++){
-            int g = 255*(d_image[y][x]-min)/(max); //正規化
+            int g = 255*(d_image[y][x]-min)/(max-min); //正規化
             if ( g>255 ) g=255;
             else if ( g<0 ) g=0;
             image[n2][y][x] = g;
         }
     }
-    
+
     padding_border(n1, n2, w); //
 }
 
@@ -130,9 +130,9 @@ double sort_3x3( int n, int y, int x, int k)
     p[6] = image[n][y+1][x-1];
     p[7] = image[n][y+1][x  ];
     p[8] = image[n][y+1][x+1];
-    
+
     qsort(p, 9, sizeof(unsigned char), uchar_compare);  //quick_sort関数
-    
+
     return (double)p[k];  //k:min(0), median(4), max(8)
 }
 
@@ -141,11 +141,11 @@ double sekiwa( int n, int y, int x, int w)
 //画像No.nの(y,x)を中心にしてフィルタ係数との積和演算
     int i,j;
     double value=0;
-    
+
     //フィルタ係数の中心(w,w)と画像の(y,x)を基準にする場合
     for(j=-w;j<=w;j++){     // yを中心にして-w..w
         for(i=-w;i<=w;i++){ // xを中心にして-w..w
-            value += Cji[j+w][i+w] * image[n][y+i][x+j];
+            value += Cji[j+w][i+w] * image[n][y+j][x+i];
         }
     }
     //フィルタ係数をC[j][i]とした場合：左上(0,0)を基準にする
@@ -162,27 +162,27 @@ void padding_border(int n1, int n2, int w)
 {
 //外周部（w画素）の埋め合わせ：内側の画素値をコピー
     int y,x;
-    
+
     for(y=w-1;y>=0;y--){                                     // 上端
         for(x=w;x<width[n2]-w;x++){                          // 左上と右上の角を除く
             image[n2][y][x] = image[n2][w][x];
         }
     }
-    
+
     for(y=height[n2]-w-1;y<height[n2];y++){                 // 下端
         for(x=w;x<width[n2]-w;x++){                         // 左下と右下の角を除く
             image[n2][y][x] = image[n2][height[n2]-w-1][x];
         }
     }
-    
+
     for(x=w-1;x>=0;x--){                                   // 左端
-        for(y=0;y<height+1;y++){                         // 左上と左下の角を含める
+        for(y=0;y<height[n2]+1;y++){                         // 左上と左下の角を含める
             image[n2][y][x] = image[n2][y][w];
         }
     }
-    
+
     for(x=width[n2]-w-1;x<width[n2];x++){                  // 右端
-        for(y=0;y<height+1;y++){                         // 右上と右下の角を含める
+        for(y=0;y<height[n2]+1;y++){                         // 右上と右下の角を含める
             image[n2][y][x] = image[n2][y][width[n2]-w-1];
         }
     }
@@ -191,11 +191,11 @@ void padding_border(int n1, int n2, int w)
 void set_Cji_sobel_v(int *w)
 {
     double Cji_sobel_v[3][3] =
-    {
-        {-1, 0, 1},
-        {-2, 0, 2},
-        {-1, 0, 1}
-    };
+            {
+                    {-1, 0, 1},
+                    {-2, 0, 2},
+                    {-1, 0, 1}
+            };
     int j,i;
     (*w) = 1;
     int size=2*(*w)+1;
@@ -209,11 +209,11 @@ void set_Cji_sobel_v(int *w)
 void set_Cji_sobel_h(int *w)
 {
     double Cji_sobel_h[3][3] =
-    {
-        {-1,-2,-1},
-        {0,0,0},
-        {1,2,1}
-    };
+            {
+                    {-1,-2,-1},
+                    {0, 0 , 0},
+                    {1 ,2 , 1}
+            };
     int j,i;
     (*w) = 1;
     int size=2*(*w)+1;
@@ -227,11 +227,11 @@ void set_Cji_sobel_h(int *w)
 void set_Cji_laplacian(int *w)
 {
     double Cji_laplacian[3][3] =
-    {
-        {0,-1,0},
-        {-1,4,-1},
-        {0,-1,0}
-    };
+            {
+                    {0,-1,0},
+                    {-1,4,-1},
+                    {0,-1,0}
+            };
     int j,i;
     (*w) = 1;
     int size=2*(*w)+1;
@@ -245,11 +245,11 @@ void set_Cji_laplacian(int *w)
 void set_Cji_sharpen(int *w)
 {
     double Cji_sharpen[3][3] =
-    {
-        {0,-1,0},
-        {-1,5,-1},
-        {0,-1,0}
-    };
+            {
+                    {0,-1,0},
+                    {-1,5,-1},
+                    {0,-1,0}
+            };
     int j,i;
     (*w) = 1;
     int size=2*(*w)+1;
@@ -275,17 +275,17 @@ void set_Cji_gaussian(double sigma, int *w)
 void set_Cji_blur_v(int *w)
 {
     double Cji_blur_v[9][9] =
-    {
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-        {0, 0, 0, 0, 1, 0, 0, 0, 0},
-    };
+            {
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 1, 0, 0, 0, 0},
+            };
     int j,i;
     (*w) = 4;
     int size=2*(*w)+1;
@@ -299,17 +299,17 @@ void set_Cji_blur_v(int *w)
 void set_Cji_blur_h(int *w)
 {
     double Cji_blur_h[9][9] =
-    {
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {1, 1, 1, 1, 1, 1, 1, 1, 1},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-        {0, 0, 0, 0, 0, 0, 0, 0, 0},
-    };
+            {
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {1, 1, 1, 1, 1, 1, 1, 1, 1},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+                    {0, 0, 0, 0, 0, 0, 0, 0, 0},
+            };
     int j,i;
     (*w) = 4;
     int size=2*(*w)+1;
