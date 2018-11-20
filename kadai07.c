@@ -49,6 +49,7 @@ void detect_contour( int n )
     printf("perimeter=%.2f\n", perimeter);
     printf("area=%.2f\n", area);
     printf("circularity=%.2f\n", circularity);
+    calc_m00(n);
 }
 
 int inside( int y, int x, int n )
@@ -133,12 +134,18 @@ double calc_area( int n )// 図形（黒0）の画素を数える
 double calc_m00( int n)
 {
     int x,y;
+    int R=0;
+    double sx=0;
+    double sy=0;
     double m00=0;
     for(y=0;y<height[n];y++)
         for(x=0;x<width[n];x++)
             if(image[n][y][x]==ZUKEI)   // 図形（ZUKEI:黒0）の画素を数える
-                m00 += 1*1;
-                // x^0*y^0
-                // power((double)x, 0.0) * power((double)y, 0.0)
-    return (double)m00;
+                sx+=x;
+                sy+=y;
+                R++;
+    sx=sx/R;
+    sy=sy/R;
+    printf("centroid(x,y)=(%.2f,%.2f)\n",sx,sy);
+    return 0;
 }
