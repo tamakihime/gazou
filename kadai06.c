@@ -14,7 +14,7 @@ int chain_code[8][2] = {  // Freeman の Chain code
     { 1 ,  0 }, //6
     {  1,  1 }, //7
     };
-int next_code_no[8] = { 7, 0, 1, 2, 3 , 4 , 5, 6  };
+int next_code_no[8] = { 7, 7, 1, 1,3 , 3 , 5, 5  };
 
 void detect_contour( int n );
 int inside( int x, int y );
